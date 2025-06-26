@@ -28,6 +28,7 @@ import Particles from "@/components/ui/particles";
 import FloatingShapes from "@/components/ui/floating-shapes";
 import MorphingButton from "@/components/ui/morphing-button";
 import AnimatedCounter from "@/components/ui/animated-counter";
+import DynamicLogo from "@/components/ui/dynamic-logo";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -121,20 +122,10 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <motion.div
-              className="flex items-center space-x-2"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <motion.div
-                className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow"
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                <span className="text-white font-bold text-sm">SQ</span>
-              </motion.div>
-              <span className="font-display font-bold text-xl text-neon animate-text-glow">
-                SideQuestAI
-              </span>
+              <DynamicLogo animate={true} />
             </motion.div>
 
             <div className="flex items-center space-x-6">
@@ -626,16 +617,8 @@ const Index = () => {
             viewport={{ once: true }}
           >
             <div className="col-span-2">
-              <motion.div
-                className="flex items-center space-x-2 mb-4"
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow">
-                  <span className="text-white font-bold text-sm">SQ</span>
-                </div>
-                <span className="font-display font-bold text-xl text-neon">
-                  SideQuestAI
-                </span>
+              <motion.div className="mb-4" whileHover={{ scale: 1.05 }}>
+                <DynamicLogo />
               </motion.div>
               <p className="text-slate-400 mb-4 max-w-sm">
                 Empowering entrepreneurs with AI-driven education for successful

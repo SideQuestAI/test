@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import MorphingButton from "@/components/ui/morphing-button";
+import DynamicLogo from "@/components/ui/dynamic-logo";
 
 const Pricing = () => {
   const plans = [
@@ -183,16 +184,7 @@ const Pricing = () => {
           <div className="flex justify-between items-center h-16">
             <motion.div whileHover={{ scale: 1.05 }}>
               <Link to="/" className="flex items-center space-x-2">
-                <motion.div
-                  className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow"
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <span className="text-white font-bold text-sm">SQ</span>
-                </motion.div>
-                <span className="font-display font-bold text-xl text-neon animate-text-glow">
-                  SideQuestAI
-                </span>
+                <DynamicLogo animate={true} />
               </Link>
             </motion.div>
 
@@ -459,16 +451,8 @@ const Pricing = () => {
       <footer className="bg-slate-900/50 glass border-t border-white/10 text-white py-12 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <motion.div
-              className="flex items-center space-x-2 mb-4 md:mb-0"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow">
-                <span className="text-white font-bold text-sm">SQ</span>
-              </div>
-              <span className="font-display font-bold text-xl text-neon">
-                SideQuestAI
-              </span>
+            <motion.div className="mb-4 md:mb-0" whileHover={{ scale: 1.05 }}>
+              <DynamicLogo />
             </motion.div>
 
             <div className="flex space-x-6 text-sm text-slate-400">
