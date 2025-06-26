@@ -54,26 +54,37 @@ const Download = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden">
-      {/* Background Effects */}
+      {/* Subtle Background Effects */}
       <div className="fixed inset-0 z-0">
-        <Particles count={80} />
-        <FloatingShapes count={10} />
+        {/* Dark base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
 
-        <motion.div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background:
-              "radial-gradient(circle at 30% 70%, rgba(54, 172, 255, 0.4) 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(168, 85, 247, 0.4) 0%, transparent 50%)",
-          }}
-          animate={{
-            backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
+        {/* Random shooting lights */}
+        <div className="absolute inset-0">
+          {Array.from({ length: 8 }, (_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-0.5 h-16 bg-gradient-to-t from-transparent via-purple-400/20 to-transparent"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: ["-100vh", "100vh"],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: Math.random() * 4 + 3,
+                repeat: Infinity,
+                delay: Math.random() * 6,
+                ease: "linear",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Minimal particles */}
+        <Particles count={20} />
       </div>
 
       {/* Navigation */}
@@ -107,6 +118,16 @@ const Download = () => {
                   className="text-slate-300 hover:text-white transition-colors font-medium relative group"
                 >
                   Home
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+                </Link>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.1 }}>
+                <Link
+                  to="/pricing"
+                  className="text-slate-300 hover:text-white transition-colors font-medium relative group"
+                >
+                  Pricing
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
                 </Link>
               </motion.div>

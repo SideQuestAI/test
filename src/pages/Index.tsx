@@ -78,27 +78,37 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden">
-      {/* Background Effects */}
+      {/* Subtle Background Effects */}
       <div className="fixed inset-0 z-0">
-        <Particles count={100} />
-        <FloatingShapes count={12} />
+        {/* Dark base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
 
-        {/* Animated background gradient */}
-        <motion.div
-          className="absolute inset-0 opacity-30"
-          style={{
-            background:
-              "radial-gradient(circle at 20% 80%, rgba(54, 172, 255, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.2) 0%, transparent 50%)",
-          }}
-          animate={{
-            backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
+        {/* Random shooting lights */}
+        <div className="absolute inset-0">
+          {Array.from({ length: 12 }, (_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-0.5 h-16 bg-gradient-to-t from-transparent via-blue-400/20 to-transparent"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: ["-100vh", "100vh"],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: Math.random() * 4 + 3,
+                repeat: Infinity,
+                delay: Math.random() * 8,
+                ease: "linear",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Subtle particles */}
+        <Particles count={30} />
       </div>
 
       {/* Navigation */}
@@ -141,7 +151,22 @@ const Index = () => {
                 </Link>
               </motion.div>
 
-              <MorphingButton>
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/pricing"
+                  className="text-slate-300 hover:text-white transition-all duration-300 font-medium relative group"
+                >
+                  Pricing
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+                </Link>
+              </motion.div>
+
+              <MorphingButton
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
                 Get Started
                 <ArrowRight className="w-4 h-4" />
               </MorphingButton>
@@ -211,7 +236,10 @@ const Index = () => {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <MorphingButton size="lg">
+              <MorphingButton
+                size="lg"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
                 <Rocket className="w-5 h-5" />
                 Start Your Journey
               </MorphingButton>
@@ -565,7 +593,12 @@ const Index = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <MorphingButton size="lg">
+                <MorphingButton
+                  size="lg"
+                  onClick={() =>
+                    window.scrollTo({ top: 0, behavior: "smooth" })
+                  }
+                >
                   <Rocket className="w-5 h-5" />
                   Start Your Course
                 </MorphingButton>
@@ -620,6 +653,12 @@ const Index = () => {
                   className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   Download
+                </Link>
+                <Link
+                  to="/pricing"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
+                >
+                  Pricing
                 </Link>
                 <a
                   href="#"
