@@ -1,3 +1,4 @@
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,359 +17,593 @@ import {
   Zap,
   Users,
   TrendingUp,
+  Sparkles,
+  Bot,
+  Code2,
+  Layers3,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useRef } from "react";
+import Particles from "@/components/ui/particles";
+import FloatingShapes from "@/components/ui/floating-shapes";
+import MorphingButton from "@/components/ui/morphing-button";
+import AnimatedCounter from "@/components/ui/animated-counter";
 
 const Index = () => {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll();
+  const yParallax = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const scaleParallax = useTransform(scrollYProgress, [0, 0.5], [1, 1.2]);
+
+  const heroInView = useInView(heroRef, { once: true });
+  const featuresInView = useInView(featuresRef, { once: true });
+  const statsInView = useInView(statsRef, { once: true });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
+  };
+
+  const floatVariants = {
+    animate: {
+      y: [0, -20, 0],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+      {/* Background Effects */}
+      <div className="fixed inset-0 z-0">
+        <Particles count={100} />
+        <FloatingShapes count={12} />
+
+        {/* Animated background gradient */}
+        <motion.div
+          className="absolute inset-0 opacity-30"
+          style={{
+            background:
+              "radial-gradient(circle at 20% 80%, rgba(54, 172, 255, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.2) 0%, transparent 50%)",
+          }}
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </div>
+
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+      <motion.nav
+        className="sticky top-0 z-50 glass border-b border-white/10"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
+            <motion.div
+              className="flex items-center space-x-2"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <motion.div
+                className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
                 <span className="text-white font-bold text-sm">SQ</span>
-              </div>
-              <span className="font-display font-bold text-xl text-slate-900">
+              </motion.div>
+              <span className="font-display font-bold text-xl text-neon animate-text-glow">
                 SideQuestAI
               </span>
-            </div>
+            </motion.div>
+
             <div className="flex items-center space-x-6">
-              <Link
-                to="/download"
-                className="text-slate-600 hover:text-slate-900 transition-colors font-medium"
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Download
-              </Link>
-              <Button className="bg-gradient-brand hover:opacity-90 text-white">
+                <Link
+                  to="/download"
+                  className="text-slate-300 hover:text-white transition-all duration-300 font-medium relative group"
+                >
+                  Download
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+                </Link>
+              </motion.div>
+
+              <MorphingButton>
                 Get Started
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
+                <ArrowRight className="w-4 h-4" />
+              </MorphingButton>
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
-      <section className="py-20 lg:py-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <section
+        ref={heroRef}
+        className="relative py-20 lg:py-32 px-4 sm:px-6 lg:px-8 z-10"
+      >
+        <motion.div
+          className="max-w-6xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate={heroInView ? "visible" : "hidden"}
+        >
           <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-brand-100 text-brand-700 px-4 py-2 rounded-full text-sm font-medium mb-8 animate-fade-in-up">
-              <Brain className="w-4 h-4" />
-              <span>AI-Powered Side Hustle Education</span>
-            </div>
+            <motion.div
+              variants={itemVariants}
+              className="inline-flex items-center space-x-2 glass px-4 py-2 rounded-full text-sm font-medium mb-8 glow"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              >
+                <Brain className="w-4 h-4 text-blue-400" />
+              </motion.div>
+              <span className="text-white">
+                AI-Powered Side Hustle Education
+              </span>
+            </motion.div>
 
-            <h1 className="text-6xl sm:text-7xl lg:text-8xl font-display font-bold text-slate-900 mb-8 animate-fade-in-up">
-              Your <span className="text-gradient">AI Mentor</span>
+            <motion.h1
+              variants={itemVariants}
+              className="text-6xl sm:text-7xl lg:text-8xl font-display font-bold mb-8"
+            >
+              Your{" "}
+              <motion.span
+                className="text-gradient inline-block"
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+                style={{
+                  backgroundSize: "200% 200%",
+                }}
+              >
+                AI Mentor
+              </motion.span>
               <br />
               for Side Hustles
-            </h1>
+            </motion.h1>
 
-            <p className="text-xl lg:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up">
+            <motion.p
+              variants={itemVariants}
+              className="text-xl lg:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+            >
               Tell us your side hustle idea, and our AI will generate a complete
               step-by-step course with milestones to turn your vision into
               reality.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up">
-              <Button
-                size="lg"
-                className="bg-gradient-brand hover:opacity-90 text-white py-6 px-8 text-lg font-medium"
-              >
-                <Rocket className="mr-2 w-5 h-5" />
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <MorphingButton size="lg">
+                <Rocket className="w-5 h-5" />
                 Start Your Journey
-              </Button>
+              </MorphingButton>
+
               <Link to="/download">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-slate-300 hover:border-brand-300 py-6 px-8 text-lg font-medium"
-                >
-                  <Download className="mr-2 w-5 h-5" />
+                <MorphingButton variant="secondary" size="lg">
+                  <Download className="w-5 h-5" />
                   Download App
-                </Button>
+                </MorphingButton>
               </Link>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Demo Card */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="p-8 shadow-2xl border-2 border-white/50 backdrop-blur-sm animate-fade-in-up">
+          {/* Animated Demo Card */}
+          <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
+            <motion.div
+              className="glass p-8 rounded-2xl border-2 border-white/20 glow hover-lift"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <div className="text-center mb-6">
-                <Badge
-                  variant="secondary"
-                  className="bg-green-100 text-green-700 border-green-200"
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
-                  Live Demo
-                </Badge>
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 glow">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Live Demo
+                  </Badge>
+                </motion.div>
               </div>
-              <div className="bg-slate-50 rounded-xl p-6 mb-6">
-                <p className="text-lg text-slate-700 mb-4">
-                  <span className="font-medium text-brand-600">You:</span> "I
+
+              <div className="glass rounded-xl p-6 mb-6 border border-white/10">
+                <motion.p
+                  className="text-lg text-slate-300 mb-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                >
+                  <span className="font-medium text-blue-400">You:</span> "I
                   want to start a social media marketing agency"
-                </p>
+                </motion.p>
+
                 <div className="space-y-3 text-left">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-brand-100 rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-brand-600 font-medium text-sm">
-                        1
-                      </span>
-                    </div>
-                    <p className="text-slate-700">
-                      Build a professional portfolio with 3 sample campaigns
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-brand-100 rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-brand-600 font-medium text-sm">
-                        2
-                      </span>
-                    </div>
-                    <p className="text-slate-700">
-                      Master Facebook Ads Manager and Google Ads fundamentals
-                    </p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-brand-100 rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-brand-600 font-medium text-sm">
-                        3
-                      </span>
-                    </div>
-                    <p className="text-slate-700">
-                      Land your first 3 clients using cold outreach strategies
-                    </p>
-                  </div>
+                  {[
+                    "Build a professional portfolio with 3 sample campaigns",
+                    "Master Facebook Ads Manager and Google Ads fundamentals",
+                    "Land your first 3 clients using cold outreach strategies",
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-start space-x-3"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.5 + index * 0.3 }}
+                    >
+                      <motion.div
+                        className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center mt-0.5 border border-blue-500/30"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ delay: 2 + index * 0.3, duration: 0.5 }}
+                      >
+                        <span className="text-blue-400 font-medium text-sm">
+                          {index + 1}
+                        </span>
+                      </motion.div>
+                      <p className="text-slate-300">{item}</p>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-              <p className="text-center text-slate-600">
-                <span className="font-medium text-brand-600">SideQuestAI:</span>{" "}
+
+              <motion.p
+                className="text-center text-slate-400"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 3 }}
+              >
+                <span className="font-medium text-purple-400">
+                  SideQuestAI:
+                </span>{" "}
                 Generates a complete 12-week course with actionable milestones
-              </p>
-            </Card>
-          </div>
-        </div>
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section ref={statsRef} className="py-20 relative z-10">
+        <motion.div
+          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate={statsInView ? "visible" : "hidden"}
+        >
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            variants={containerVariants}
+          >
+            {[
+              { number: 10000, suffix: "+", label: "Courses Generated" },
+              { number: 5000, suffix: "+", label: "Success Stories" },
+              { number: 95, suffix: "%", label: "Success Rate" },
+              { number: 24, suffix: "/7", label: "AI Availability" },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="text-center glass p-6 rounded-xl hover-lift glow-purple"
+                whileHover={{ scale: 1.05 }}
+              >
+                <motion.div
+                  className="text-4xl font-bold text-gradient mb-2"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{
+                    delay: index * 0.2,
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                >
+                  <AnimatedCounter
+                    target={stat.number}
+                    suffix={stat.suffix}
+                    startAnimation={statsInView}
+                  />
+                </motion.div>
+                <p className="text-slate-400 text-sm">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-white">
+      <section className="py-20 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-display font-bold text-slate-900 mb-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-5xl font-display font-bold mb-6">
               How <span className="text-gradient">SideQuestAI</span> Works
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
               Three simple steps to transform any side hustle idea into a
               structured learning path
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Target className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-display font-bold text-slate-900 mb-4">
-                1. Share Your Idea
-              </h3>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                Tell our AI about the side hustle you want to pursue. Be as
-                specific or general as you like.
-              </p>
-            </div>
+            {[
+              {
+                icon: Target,
+                title: "1. Share Your Idea",
+                description:
+                  "Tell our AI about the side hustle you want to pursue. Be as specific or general as you like.",
+                gradient: "from-blue-500 to-purple-600",
+                delay: 0,
+              },
+              {
+                icon: Brain,
+                title: "2. AI Generates Course",
+                description:
+                  "Our AI analyzes your idea and creates a comprehensive course with clear milestones and action steps.",
+                gradient: "from-purple-500 to-pink-600",
+                delay: 0.2,
+              },
+              {
+                icon: Rocket,
+                title: "3. Start Building",
+                description:
+                  "Follow your personalized roadmap and track your progress as you build your side hustle.",
+                gradient: "from-pink-500 to-red-500",
+                delay: 0.4,
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                className="text-center group"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: step.delay }}
+                viewport={{ once: true }}
+              >
+                <motion.div
+                  className={`w-20 h-20 bg-gradient-to-br ${step.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 glow group-hover:scale-110 transition-transform duration-300`}
+                  variants={floatVariants}
+                  animate="animate"
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                >
+                  <step.icon className="w-10 h-10 text-white" />
+                </motion.div>
 
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Brain className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-display font-bold text-slate-900 mb-4">
-                2. AI Generates Course
-              </h3>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                Our AI analyzes your idea and creates a comprehensive course
-                with clear milestones and action steps.
-              </p>
-            </div>
+                <h3 className="text-2xl font-display font-bold mb-4 text-white">
+                  {step.title}
+                </h3>
 
-            <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Rocket className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-display font-bold text-slate-900 mb-4">
-                3. Start Building
-              </h3>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                Follow your personalized roadmap and track your progress as you
-                build your side hustle.
-              </p>
-            </div>
+                <p className="text-lg text-slate-400 leading-relaxed">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Features Grid */}
+      <section ref={featuresRef} className="py-20 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-display font-bold text-slate-900 mb-6">
-              Why Choose SideQuestAI?
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-5xl font-display font-bold mb-6">
+              Why Choose <span className="text-gradient">SideQuestAI?</span>
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
               Cutting-edge AI technology meets practical business education
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="p-6 border-2 border-white hover:border-brand-200 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center mb-4">
-                  <Zap className="w-6 h-6 text-brand-600" />
-                </div>
-                <CardTitle className="text-xl font-display font-semibold">
-                  Instant Course Generation
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base text-slate-600">
-                  Get a complete course outline in seconds, not weeks. Our AI
-                  understands business fundamentals and market dynamics.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="p-6 border-2 border-white hover:border-brand-200 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                  <Target className="w-6 h-6 text-purple-600" />
-                </div>
-                <CardTitle className="text-xl font-display font-semibold">
-                  Clear Milestones
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base text-slate-600">
-                  Break down complex business goals into achievable steps with
-                  specific deadlines and success metrics.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="p-6 border-2 border-white hover:border-brand-200 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-pink-600" />
-                </div>
-                <CardTitle className="text-xl font-display font-semibold">
-                  Personalized Learning
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base text-slate-600">
-                  Courses adapt to your experience level, available time, and
-                  learning preferences for maximum effectiveness.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="p-6 border-2 border-white hover:border-brand-200 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
-                </div>
-                <CardTitle className="text-xl font-display font-semibold">
-                  Market Intelligence
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base text-slate-600">
-                  Get insights into market trends, competition analysis, and
-                  proven strategies for your specific niche.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="p-6 border-2 border-white hover:border-brand-200 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                  <Brain className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl font-display font-semibold">
-                  Continuous Updates
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base text-slate-600">
-                  Your course evolves as you progress, with new recommendations
-                  and adjustments based on your achievements.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="p-6 border-2 border-white hover:border-brand-200 hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-                  <Rocket className="w-6 h-6 text-orange-600" />
-                </div>
-                <CardTitle className="text-xl font-display font-semibold">
-                  Action-Oriented
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base text-slate-600">
-                  Every lesson includes specific tasks and deliverables to keep
-                  you moving forward with real progress.
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </div>
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate={featuresInView ? "visible" : "hidden"}
+          >
+            {[
+              {
+                icon: Zap,
+                title: "Instant Course Generation",
+                description:
+                  "Get a complete course outline in seconds, not weeks. Our AI understands business fundamentals and market dynamics.",
+                color: "blue",
+              },
+              {
+                icon: Target,
+                title: "Clear Milestones",
+                description:
+                  "Break down complex business goals into achievable steps with specific deadlines and success metrics.",
+                color: "purple",
+              },
+              {
+                icon: Users,
+                title: "Personalized Learning",
+                description:
+                  "Courses adapt to your experience level, available time, and learning preferences for maximum effectiveness.",
+                color: "pink",
+              },
+              {
+                icon: TrendingUp,
+                title: "Market Intelligence",
+                description:
+                  "Get insights into market trends, competition analysis, and proven strategies for your specific niche.",
+                color: "green",
+              },
+              {
+                icon: Bot,
+                title: "Continuous Updates",
+                description:
+                  "Your course evolves as you progress, with new recommendations and adjustments based on your achievements.",
+                color: "cyan",
+              },
+              {
+                icon: Code2,
+                title: "Action-Oriented",
+                description:
+                  "Every lesson includes specific tasks and deliverables to keep you moving forward with real progress.",
+                color: "orange",
+              },
+            ].map((feature, index) => (
+              <motion.div key={index} variants={itemVariants}>
+                <Card className="p-6 glass border-2 border-white/10 hover:border-white/30 hover-lift glow h-full group">
+                  <CardHeader className="pb-4">
+                    <motion.div
+                      className={`w-12 h-12 bg-${feature.color}-500/20 rounded-xl flex items-center justify-center mb-4 border border-${feature.color}-500/30`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <feature.icon
+                        className={`w-6 h-6 text-${feature.color}-400`}
+                      />
+                    </motion.div>
+                    <CardTitle className="text-xl font-display font-semibold text-white group-hover:text-gradient transition-all duration-300">
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
+                      {feature.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-brand">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl font-display font-bold text-white mb-6">
-            Ready to Turn Your Idea Into Reality?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Join the AI-powered revolution in entrepreneurial education. Your
-            side hustle journey starts with a single click.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-brand-600 hover:bg-gray-50 py-6 px-8 text-lg font-medium"
-            >
-              <Rocket className="mr-2 w-5 h-5" />
-              Start Your Course
-            </Button>
-            <Link to="/download">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white/10 py-6 px-8 text-lg font-medium"
+      <section className="py-20 relative z-10">
+        <motion.div
+          className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8"
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <motion.div
+            className="glass p-16 rounded-3xl border-2 border-white/20 glow-pink relative overflow-hidden"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 200 }}
+          >
+            {/* Background animation */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10"
+              animate={{
+                backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+
+            <div className="relative z-10">
+              <motion.h2
+                className="text-5xl font-display font-bold mb-6 text-white"
+                animate={{
+                  textShadow: [
+                    "0 0 20px rgba(255,255,255,0.5)",
+                    "0 0 40px rgba(255,255,255,0.8)",
+                    "0 0 20px rgba(255,255,255,0.5)",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
               >
-                <Download className="mr-2 w-5 h-5" />
-                Download App
-              </Button>
-            </Link>
-          </div>
-        </div>
+                Ready to Turn Your Idea Into Reality?
+              </motion.h2>
+
+              <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Join the AI-powered revolution in entrepreneurial education.
+                Your side hustle journey starts with a single click.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <MorphingButton size="lg">
+                  <Rocket className="w-5 h-5" />
+                  Start Your Course
+                </MorphingButton>
+
+                <Link to="/download">
+                  <MorphingButton variant="secondary" size="lg">
+                    <Download className="w-5 h-5" />
+                    Download App
+                  </MorphingButton>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white py-16">
+      <footer className="bg-slate-900/50 glass border-t border-white/10 text-white py-16 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <motion.div
+            className="grid md:grid-cols-4 gap-8 mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
             <div className="col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
+              <motion.div
+                className="flex items-center space-x-2 mb-4"
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow">
                   <span className="text-white font-bold text-sm">SQ</span>
                 </div>
-                <span className="font-display font-bold text-xl">
+                <span className="font-display font-bold text-xl text-neon">
                   SideQuestAI
                 </span>
-              </div>
+              </motion.div>
               <p className="text-slate-400 mb-4 max-w-sm">
                 Empowering entrepreneurs with AI-driven education for successful
                 side hustles.
@@ -376,23 +611,25 @@ const Index = () => {
             </div>
 
             <div>
-              <h3 className="font-display font-semibold mb-4">Product</h3>
+              <h3 className="font-display font-semibold mb-4 text-white">
+                Product
+              </h3>
               <div className="space-y-2 text-slate-400">
                 <Link
                   to="/download"
-                  className="block hover:text-white transition-colors"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   Download
                 </Link>
                 <a
                   href="#"
-                  className="block hover:text-white transition-colors"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   Features
                 </a>
                 <a
                   href="#"
-                  className="block hover:text-white transition-colors"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   How it Works
                 </a>
@@ -400,53 +637,47 @@ const Index = () => {
             </div>
 
             <div>
-              <h3 className="font-display font-semibold mb-4">Support</h3>
+              <h3 className="font-display font-semibold mb-4 text-white">
+                Support
+              </h3>
               <div className="space-y-2 text-slate-400">
                 <a
                   href="#"
-                  className="block hover:text-white transition-colors"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   Help Center
                 </a>
                 <a
                   href="#"
-                  className="block hover:text-white transition-colors"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   Contact
                 </a>
                 <a
                   href="#"
-                  className="block hover:text-white transition-colors"
+                  className="block hover:text-white transition-colors duration-300 hover:translate-x-1"
                 >
                   Privacy
                 </a>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="border-t border-slate-700 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <div className="border-t border-slate-700/50 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-slate-400 text-sm">
               © 2024 SideQuestAI. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                Terms
-              </a>
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                Privacy
-              </a>
-              <a
-                href="#"
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                Cookies
-              </a>
+              {["Terms", "Privacy", "Cookies"].map((item) => (
+                <motion.a
+                  key={item}
+                  href="#"
+                  className="text-slate-400 hover:text-white transition-colors duration-300"
+                  whileHover={{ scale: 1.1 }}
+                >
+                  {item}
+                </motion.a>
+              ))}
             </div>
           </div>
         </div>
