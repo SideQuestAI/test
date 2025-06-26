@@ -26,17 +26,35 @@ export const DynamicVideo: React.FC<DynamicVideoProps> = ({
     const loadVideo = async () => {
       try {
         setIsLoading(true);
+        // Add a small delay to prevent rapid fire requests
+        await new Promise((resolve) => setTimeout(resolve, 200));
         const src = await getVideoSrc();
         setVideoSrc(src);
+        if (!src) {
+          setVideoError(true);
+        }
       } catch (error) {
-        console.warn("Video loading failed:", error);
+        console.debug(
+          "Video loading failed (this is normal if no video exists):",
+          error,
+        );
         setVideoError(true);
+        setVideoSrc(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadVideo();
+    // Only attempt to load video if path is configured
+    if (
+      appConfig.branding.video.previewPath &&
+      appConfig.branding.video.previewPath.trim() !== ""
+    ) {
+      loadVideo();
+    } else {
+      setIsLoading(false);
+      setVideoError(true);
+    }
   }, []);
 
   const handleVideoLoad = () => {

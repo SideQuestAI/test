@@ -3,28 +3,52 @@ import { appConfig } from "@/config/app.config";
 // Asset loading utilities with fallbacks
 
 export const checkAssetExists = async (path: string): Promise<boolean> => {
+  if (!path) return false;
+
   try {
-    const response = await fetch(path, { method: "HEAD" });
-    return response.ok;
-  } catch {
+    // Create abort controller for timeout (better browser compatibility)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
+    const response = await fetch(path, {
+      method: "HEAD",
+      cache: "no-cache",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    return response.ok && response.status === 200;
+  } catch (error) {
+    // Silently fail and return false - this is expected for missing assets
+    console.debug(`Asset check failed for ${path}:`, error);
     return false;
   }
 };
 
 export const getLogoSrc = async (): Promise<string | null> => {
   const logoPath = appConfig.branding.logo.path;
-  if (!logoPath) return null;
+  if (!logoPath || logoPath.trim() === "") return null;
 
-  const exists = await checkAssetExists(logoPath);
-  return exists ? logoPath : null;
+  try {
+    const exists = await checkAssetExists(logoPath);
+    return exists ? logoPath : null;
+  } catch (error) {
+    console.debug("Logo loading failed:", error);
+    return null;
+  }
 };
 
 export const getVideoSrc = async (): Promise<string | null> => {
   const videoPath = appConfig.branding.video.previewPath;
-  if (!videoPath) return null;
+  if (!videoPath || videoPath.trim() === "") return null;
 
-  const exists = await checkAssetExists(videoPath);
-  return exists ? videoPath : null;
+  try {
+    const exists = await checkAssetExists(videoPath);
+    return exists ? videoPath : null;
+  } catch (error) {
+    console.debug("Video loading failed:", error);
+    return null;
+  }
 };
 
 export const getDownloadLink = (

@@ -21,15 +21,32 @@ export const DynamicLogo: React.FC<DynamicLogoProps> = ({
   useEffect(() => {
     const loadLogo = async () => {
       try {
+        // Add a small delay to prevent rapid fire requests
+        await new Promise((resolve) => setTimeout(resolve, 100));
         const src = await getLogoSrc();
         setLogoSrc(src);
+        if (!src) {
+          setLogoError(true);
+        }
       } catch (error) {
-        console.warn("Logo loading failed:", error);
+        console.debug(
+          "Logo loading failed (this is normal if no logo exists):",
+          error,
+        );
         setLogoError(true);
+        setLogoSrc(null);
       }
     };
 
-    loadLogo();
+    // Only attempt to load logo if path is configured
+    if (
+      appConfig.branding.logo.path &&
+      appConfig.branding.logo.path.trim() !== ""
+    ) {
+      loadLogo();
+    } else {
+      setLogoError(true);
+    }
   }, []);
 
   const handleLogoLoad = () => {
