@@ -1,4 +1,5 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,17 +18,22 @@ import {
   Zap,
   ArrowRight,
   Apple,
-  Palette,
   CheckCircle,
+  Globe,
+  Github,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Particles from "@/components/ui/particles";
-import FloatingShapes from "@/components/ui/floating-shapes";
 import MorphingButton from "@/components/ui/morphing-button";
+import DynamicLogo from "@/components/ui/dynamic-logo";
+import DynamicVideo from "@/components/ui/dynamic-video";
+import { appConfig } from "@/config/app.config";
+import { hasDownloadLink, getDownloadLink, getAppVersion } from "@/lib/assets";
 
 const Download = () => {
-  const { scrollYProgress } = useScroll();
-  const yParallax = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,14 +58,156 @@ const Download = () => {
     },
   };
 
+  // Platform configurations
+  const platforms = {
+    mobile: [
+      {
+        id: "ios",
+        name: "iOS",
+        icon: Apple,
+        description: "iPhone & iPad",
+        requirements: "iOS 14.0+",
+        gradient: "from-slate-600 to-slate-700",
+        glowColor: "slate",
+      },
+      {
+        id: "android",
+        name: "Android",
+        icon: Smartphone,
+        description: "Phone & Tablet",
+        requirements: "Android 8.0+",
+        gradient: "from-green-500 to-emerald-600",
+        glowColor: "green",
+      },
+    ],
+    desktop: [
+      {
+        id: "windows",
+        name: "Windows",
+        icon: Monitor,
+        description: "PC Desktop",
+        requirements: "Windows 10+",
+        gradient: "from-blue-500 to-blue-600",
+        glowColor: "blue",
+      },
+      {
+        id: "mac",
+        name: "macOS",
+        icon: Apple,
+        description: "Mac Desktop",
+        requirements: "macOS 11+",
+        gradient: "from-purple-500 to-purple-600",
+        glowColor: "purple",
+      },
+      {
+        id: "linux",
+        name: "Linux",
+        icon: Monitor,
+        description: "Ubuntu, Fedora, etc.",
+        requirements: "x64 Architecture",
+        gradient: "from-orange-500 to-red-500",
+        glowColor: "orange",
+      },
+    ],
+    web: [
+      {
+        id: "web",
+        name: "Web App",
+        icon: Globe,
+        description: "Browser-based",
+        requirements: "Modern Browser",
+        gradient: "from-pink-500 to-rose-500",
+        glowColor: "pink",
+      },
+    ],
+  };
+
+  const PlatformCard = ({
+    platform,
+    category,
+  }: {
+    platform: any;
+    category: string;
+  }) => {
+    const hasLink = hasDownloadLink(
+      platform.id as keyof typeof appConfig.downloads,
+    );
+    const downloadLink = getDownloadLink(
+      platform.id as keyof typeof appConfig.downloads,
+    );
+    const version = getAppVersion(
+      platform.id as keyof typeof appConfig.downloads,
+    );
+
+    const handleDownload = () => {
+      if (hasLink && downloadLink) {
+        window.open(downloadLink, "_blank");
+      } else {
+        scrollToTop();
+      }
+    };
+
+    return (
+      <motion.div variants={itemVariants}>
+        <Card
+          className={`p-6 glass border-2 border-white/20 hover:border-white/40 hover-lift glow-${platform.glowColor} h-full`}
+        >
+          <CardHeader className="text-center pb-6">
+            <motion.div
+              className={`w-16 h-16 bg-gradient-to-br ${platform.gradient} rounded-2xl flex items-center justify-center mx-auto mb-4 glow`}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <platform.icon className="w-8 h-8 text-white" />
+            </motion.div>
+            <CardTitle className="text-2xl font-display font-bold text-white">
+              {platform.name}
+            </CardTitle>
+            <CardDescription className="text-lg text-slate-400">
+              {platform.description}
+            </CardDescription>
+            {hasLink && (
+              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                v{version}
+              </Badge>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center">
+              <MorphingButton
+                className="w-full"
+                variant={hasLink ? "primary" : "secondary"}
+                onClick={handleDownload}
+              >
+                {hasLink ? (
+                  <>
+                    <DownloadIcon className="w-5 h-5" />
+                    Download for {platform.name}
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-5 h-5" />
+                    Coming Soon
+                  </>
+                )}
+              </MorphingButton>
+            </div>
+            <p className="text-sm text-slate-500 text-center">
+              {platform.requirements}
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Subtle Background Effects */}
       <div className="fixed inset-0 z-0">
-        {/* Dark base gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
 
-        {/* Random shooting lights */}
         <div className="absolute inset-0">
           {Array.from({ length: 8 }, (_, i) => (
             <motion.div
@@ -83,7 +231,6 @@ const Download = () => {
           ))}
         </div>
 
-        {/* Minimal particles */}
         <Particles count={20} />
       </div>
 
@@ -98,16 +245,7 @@ const Download = () => {
           <div className="flex justify-between items-center h-16">
             <motion.div whileHover={{ scale: 1.05 }}>
               <Link to="/" className="flex items-center space-x-2">
-                <motion.div
-                  className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow"
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <span className="text-white font-bold text-sm">SQ</span>
-                </motion.div>
-                <span className="font-display font-bold text-xl text-neon animate-text-glow">
-                  SideQuestAI
-                </span>
+                <DynamicLogo animate={true} />
               </Link>
             </motion.div>
 
@@ -132,8 +270,21 @@ const Download = () => {
                 </Link>
               </motion.div>
 
+              {appConfig.links.github && (
+                <motion.div whileHover={{ scale: 1.1 }}>
+                  <a
+                    href={appConfig.links.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-300 hover:text-white transition-colors"
+                  >
+                    <Github className="w-5 h-5" />
+                  </a>
+                </motion.div>
+              )}
+
               <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 animate-pulse-glow">
-                Coming Soon
+                Download
               </Badge>
             </div>
           </div>
@@ -158,7 +309,7 @@ const Download = () => {
             >
               <DownloadIcon className="w-4 h-4" />
             </motion.div>
-            <span>Download SideQuestAI</span>
+            <span>Download {appConfig.branding.name}</span>
           </motion.div>
 
           <motion.h1
@@ -174,7 +325,7 @@ const Download = () => {
               transition={{ duration: 3, repeat: Infinity }}
               style={{ backgroundSize: "200% 200%" }}
             >
-              SideQuestAI
+              {appConfig.branding.name}
             </motion.span>{" "}
             App
           </motion.h1>
@@ -183,89 +334,102 @@ const Download = () => {
             variants={itemVariants}
             className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed"
           >
-            Start your side hustle journey today. Download our AI-powered app
-            and get personalized step-by-step courses for any side hustle you
-            can imagine.
+            {appConfig.branding.tagline}. Download our AI-powered app and get
+            personalized step-by-step courses for any side hustle you can
+            imagine.
           </motion.p>
+        </motion.div>
+      </section>
 
-          {/* Download Cards */}
+      {/* Platform Downloads */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          {/* Mobile Apps */}
           <motion.div
-            variants={containerVariants}
-            className="grid md:grid-cols-2 gap-8 mb-16"
+            className="mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
           >
-            <motion.div variants={itemVariants}>
-              <Card className="p-8 glass border-2 border-white/20 hover:border-white/40 hover-lift glow-purple h-full">
-                <CardHeader className="text-center pb-6">
-                  <motion.div
-                    className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 glow"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <Smartphone className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <CardTitle className="text-2xl font-display font-bold text-white">
-                    Mobile App
-                  </CardTitle>
-                  <CardDescription className="text-lg text-slate-400">
-                    iOS & Android
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <MorphingButton className="w-full">
-                      <Apple className="w-5 h-5" />
-                      Download for iOS
-                    </MorphingButton>
-                    <MorphingButton variant="secondary" className="w-full">
-                      <DownloadIcon className="w-5 h-5" />
-                      Download for Android
-                    </MorphingButton>
-                  </div>
-                  <p className="text-sm text-slate-500 text-center">
-                    Requires iOS 14.0+ or Android 8.0+
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <Card className="p-8 glass border-2 border-white/20 hover:border-white/40 hover-lift glow-pink h-full">
-                <CardHeader className="text-center pb-6">
-                  <motion.div
-                    className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 glow"
-                    whileHover={{ scale: 1.1, rotate: -5 }}
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                  >
-                    <Monitor className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <CardTitle className="text-2xl font-display font-bold text-white">
-                    Desktop App
-                  </CardTitle>
-                  <CardDescription className="text-lg text-slate-400">
-                    Windows, Mac & Linux
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <MorphingButton className="w-full">
-                      <DownloadIcon className="w-5 h-5" />
-                      Download for Desktop
-                    </MorphingButton>
-                    <MorphingButton variant="secondary" className="w-full">
-                      <Palette className="w-5 h-5" />
-                      Web Version
-                    </MorphingButton>
-                  </div>
-                  <p className="text-sm text-slate-500 text-center">
-                    Available for all major operating systems
-                  </p>
-                </CardContent>
-              </Card>
+            <h2 className="text-3xl font-display font-bold text-center mb-8 text-white">
+              Mobile Apps
+            </h2>
+            <motion.div
+              className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {platforms.mobile.map((platform) => (
+                <PlatformCard
+                  key={platform.id}
+                  platform={platform}
+                  category="mobile"
+                />
+              ))}
             </motion.div>
           </motion.div>
-        </motion.div>
+
+          {/* Desktop Apps */}
+          <motion.div
+            className="mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-display font-bold text-center mb-8 text-white">
+              Desktop Apps
+            </h2>
+            <motion.div
+              className="grid lg:grid-cols-3 gap-8"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {platforms.desktop.map((platform) => (
+                <PlatformCard
+                  key={platform.id}
+                  platform={platform}
+                  category="desktop"
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Web App */}
+          <motion.div
+            className="mb-16"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-display font-bold text-center mb-8 text-white">
+              Web Access
+            </h2>
+            <motion.div
+              className="grid place-items-center"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <div className="max-w-sm">
+                {platforms.web.map((platform) => (
+                  <PlatformCard
+                    key={platform.id}
+                    platform={platform}
+                    category="web"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Features Section */}
@@ -279,11 +443,10 @@ const Download = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-display font-bold mb-4 text-white">
-              Why Download <span className="text-gradient">SideQuestAI?</span>
+              Why Download {appConfig.branding.name}?
             </h2>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Get the full experience with our feature-rich mobile and desktop
-              applications
+              Get the full experience with our feature-rich applications
             </p>
           </motion.div>
 
@@ -410,16 +573,23 @@ const Download = () => {
               transition={{ duration: 4, repeat: Infinity }}
             >
               <div className="glass p-8 rounded-3xl border-2 border-white/20 glow">
-                <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center">
-                  <motion.div
-                    className="text-center"
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <Monitor className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                    <p className="text-slate-400">App Preview Coming Soon</p>
-                  </motion.div>
-                </div>
+                <DynamicVideo
+                  className="aspect-video"
+                  fallbackContent={
+                    <motion.div
+                      className="text-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center"
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    >
+                      <div>
+                        <Monitor className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                        <p className="text-slate-400">
+                          App Preview Coming Soon
+                        </p>
+                      </div>
+                    </motion.div>
+                  }
+                />
               </div>
             </motion.div>
           </motion.div>
@@ -472,14 +642,16 @@ const Download = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <MorphingButton size="lg">
+                <MorphingButton size="lg" onClick={scrollToTop}>
                   <DownloadIcon className="w-5 h-5" />
                   Download Now
                 </MorphingButton>
-                <MorphingButton variant="secondary" size="lg">
-                  <ArrowRight className="w-5 h-5" />
-                  Learn More
-                </MorphingButton>
+                <Link to="/pricing">
+                  <MorphingButton variant="secondary" size="lg">
+                    <ArrowRight className="w-5 h-5" />
+                    View Pricing
+                  </MorphingButton>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -500,20 +672,21 @@ const Download = () => {
               className="flex items-center space-x-2 mb-4 md:mb-0"
               whileHover={{ scale: 1.05 }}
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center glow">
-                <span className="text-white font-bold text-sm">SQ</span>
-              </div>
-              <span className="font-display font-bold text-xl text-neon">
-                SideQuestAI
-              </span>
+              <DynamicLogo />
             </motion.div>
 
             <div className="flex space-x-6 text-sm text-slate-400">
               <Link
                 to="/"
-                className="hover:text-white transition-colors duration-300 hover:scale-110"
+                className="hover:text-white transition-colors duration-300"
               >
                 Home
+              </Link>
+              <Link
+                to="/pricing"
+                className="hover:text-white transition-colors duration-300"
+              >
+                Pricing
               </Link>
               {["Privacy", "Terms", "Support"].map((item) => (
                 <motion.a
@@ -529,7 +702,7 @@ const Download = () => {
           </motion.div>
 
           <div className="border-t border-slate-700/50 mt-8 pt-8 text-center text-sm text-slate-400">
-            © 2024 SideQuestAI. All rights reserved.
+            © 2024 {appConfig.branding.name}. All rights reserved.
           </div>
         </div>
       </footer>

@@ -1,0 +1,92 @@
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { appConfig } from "@/config/app.config";
+import { getLogoSrc } from "@/lib/assets";
+
+interface DynamicLogoProps {
+  className?: string;
+  showText?: boolean;
+  animate?: boolean;
+}
+
+export const DynamicLogo: React.FC<DynamicLogoProps> = ({
+  className = "",
+  showText = true,
+  animate = true,
+}) => {
+  const [logoSrc, setLogoSrc] = useState<string | null>(null);
+  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const src = await getLogoSrc();
+        setLogoSrc(src);
+      } catch (error) {
+        console.warn("Logo loading failed:", error);
+        setLogoError(true);
+      }
+    };
+
+    loadLogo();
+  }, []);
+
+  const handleLogoLoad = () => {
+    setLogoLoaded(true);
+  };
+
+  const handleLogoError = () => {
+    setLogoError(true);
+    setLogoSrc(null);
+  };
+
+  // Fallback to text logo if no image or loading failed
+  const showTextLogo = !logoSrc || logoError || !logoLoaded;
+
+  const logoAnimation = animate
+    ? {
+        animate: { rotate: [0, 5, -5, 0] },
+        transition: { duration: 4, repeat: Infinity },
+      }
+    : {};
+
+  return (
+    <div className={`flex items-center space-x-2 ${className}`}>
+      <motion.div
+        className={`flex items-center justify-center ${
+          showTextLogo
+            ? "w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg glow"
+            : ""
+        }`}
+        {...logoAnimation}
+      >
+        {showTextLogo ? (
+          <span className="text-white font-bold text-sm">
+            {appConfig.branding.name.substring(0, 2).toUpperCase()}
+          </span>
+        ) : (
+          logoSrc && (
+            <img
+              src={logoSrc}
+              alt={appConfig.branding.logo.alt}
+              width={appConfig.branding.logo.width}
+              height={appConfig.branding.logo.height}
+              onLoad={handleLogoLoad}
+              onError={handleLogoError}
+              className="rounded-lg"
+            />
+          )
+        )}
+      </motion.div>
+
+      {showText && (
+        <span className="font-display font-bold text-xl text-neon animate-text-glow">
+          {appConfig.branding.name}
+        </span>
+      )}
+    </div>
+  );
+};
+
+export default DynamicLogo;
