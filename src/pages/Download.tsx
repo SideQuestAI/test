@@ -578,13 +578,28 @@ const Download = () => {
                   fallbackContent={
                     <motion.div
                       className="text-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center"
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 3, repeat: Infinity }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
                     >
                       <div>
-                        <Monitor className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                        <motion.div
+                          className="relative mb-4"
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <Monitor className="w-16 h-16 text-blue-400 mx-auto" />
+                          <motion.div
+                            className="absolute inset-0 bg-blue-400/20 rounded-full blur-xl"
+                            animate={{ opacity: [0.3, 0.6, 0.3] }}
+                            transition={{ duration: 4, repeat: Infinity }}
+                          />
+                        </motion.div>
                         <p className="text-slate-400">
                           App Preview Coming Soon
+                        </p>
+                        <p className="text-xs text-slate-500 mt-2">
+                          Add preview.mp4 to assets folder
                         </p>
                       </div>
                     </motion.div>

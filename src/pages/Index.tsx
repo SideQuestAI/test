@@ -21,19 +21,27 @@ import {
   Bot,
   Code2,
   Layers3,
+  Play,
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Particles from "@/components/ui/particles";
 import FloatingShapes from "@/components/ui/floating-shapes";
 import MorphingButton from "@/components/ui/morphing-button";
 import AnimatedCounter from "@/components/ui/animated-counter";
 import DynamicLogo from "@/components/ui/dynamic-logo";
+import { FeatureShowcase, features } from "@/components/ui/feature-showcase";
+import { useToast } from "@/contexts/toast-context";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const { showSuccess, showInfo } = useToast();
 
   const { scrollYProgress } = useScroll();
   const yParallax = useTransform(scrollYProgress, [0, 1], [0, -50]);
@@ -42,6 +50,27 @@ const Index = () => {
   const heroInView = useInView(heroRef, { once: true });
   const featuresInView = useInView(featuresRef, { once: true });
   const statsInView = useInView(statsRef, { once: true });
+
+  const handleFeatureClick = (featureKey: keyof typeof features) => {
+    setSelectedFeature(features[featureKey]);
+    setIsFeatureModalOpen(true);
+    showInfo("Feature Details", "Loading feature showcase...");
+  };
+
+  const handleStartJourney = () => {
+    showSuccess(
+      "Welcome to SideQuestAI!",
+      "Your entrepreneurial journey starts now. Check out our pricing plans!",
+    );
+    setTimeout(() => {
+      window.location.href = "/pricing";
+    }, 1500);
+  };
+
+  const handleLearnMore = () => {
+    showInfo("Learn More", "Scrolling to features section...");
+    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -227,10 +256,7 @@ const Index = () => {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <MorphingButton
-                size="lg"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              >
+              <MorphingButton size="lg" onClick={handleStartJourney}>
                 <Rocket className="w-5 h-5" />
                 Start Your Journey
               </MorphingButton>
@@ -244,21 +270,22 @@ const Index = () => {
             </motion.div>
           </div>
 
-          {/* Animated Demo Card */}
+          {/* Interactive Demo Card */}
           <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
             <motion.div
-              className="glass p-8 rounded-2xl border-2 border-white/20 glow hover-lift"
+              className="glass p-8 rounded-2xl border-2 border-white/20 glow hover-lift cursor-pointer"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
+              onClick={() => handleFeatureClick("aiGeneration")}
             >
               <div className="text-center mb-6">
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 >
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30 glow">
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    Live Demo
+                    <Play className="w-3 h-3 mr-1" />
+                    Interactive Demo
                   </Badge>
                 </motion.div>
               </div>
@@ -459,6 +486,7 @@ const Index = () => {
           </motion.div>
 
           <motion.div
+            id="features"
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
             variants={containerVariants}
             initial="hidden"
@@ -471,6 +499,7 @@ const Index = () => {
                 description:
                   "Get a complete course outline in seconds, not weeks. Our AI understands business fundamentals and market dynamics.",
                 color: "blue",
+                featureKey: "aiGeneration" as keyof typeof features,
               },
               {
                 icon: Target,
@@ -478,6 +507,7 @@ const Index = () => {
                 description:
                   "Break down complex business goals into achievable steps with specific deadlines and success metrics.",
                 color: "purple",
+                featureKey: "milestones" as keyof typeof features,
               },
               {
                 icon: Users,
@@ -485,6 +515,7 @@ const Index = () => {
                 description:
                   "Courses adapt to your experience level, available time, and learning preferences for maximum effectiveness.",
                 color: "pink",
+                featureKey: "collaboration" as keyof typeof features,
               },
               {
                 icon: TrendingUp,
@@ -492,6 +523,7 @@ const Index = () => {
                 description:
                   "Get insights into market trends, competition analysis, and proven strategies for your specific niche.",
                 color: "green",
+                featureKey: "analytics" as keyof typeof features,
               },
               {
                 icon: Bot,
@@ -499,6 +531,7 @@ const Index = () => {
                 description:
                   "Your course evolves as you progress, with new recommendations and adjustments based on your achievements.",
                 color: "cyan",
+                featureKey: "aiGeneration" as keyof typeof features,
               },
               {
                 icon: Code2,
@@ -506,10 +539,14 @@ const Index = () => {
                 description:
                   "Every lesson includes specific tasks and deliverables to keep you moving forward with real progress.",
                 color: "orange",
+                featureKey: "milestones" as keyof typeof features,
               },
             ].map((feature, index) => (
               <motion.div key={index} variants={itemVariants}>
-                <Card className="p-6 glass border-2 border-white/10 hover:border-white/30 hover-lift glow h-full group">
+                <Card
+                  className="p-6 glass border-2 border-white/10 hover:border-white/30 hover-lift glow h-full group cursor-pointer"
+                  onClick={() => handleFeatureClick(feature.featureKey)}
+                >
                   <CardHeader className="pb-4">
                     <motion.div
                       className={`w-12 h-12 bg-${feature.color}-500/20 rounded-xl flex items-center justify-center mb-4 border border-${feature.color}-500/30`}
@@ -520,8 +557,9 @@ const Index = () => {
                         className={`w-6 h-6 text-${feature.color}-400`}
                       />
                     </motion.div>
-                    <CardTitle className="text-xl font-display font-semibold text-white group-hover:text-gradient transition-all duration-300">
+                    <CardTitle className="text-xl font-display font-semibold text-white group-hover:text-gradient transition-all duration-300 flex items-center justify-between">
                       {feature.title}
+                      <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -584,12 +622,7 @@ const Index = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <MorphingButton
-                  size="lg"
-                  onClick={() =>
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }
-                >
+                <MorphingButton size="lg" onClick={handleStartJourney}>
                   <Rocket className="w-5 h-5" />
                   Start Your Course
                 </MorphingButton>
@@ -704,6 +737,13 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Feature Showcase Modal */}
+      <FeatureShowcase
+        isOpen={isFeatureModalOpen}
+        onClose={() => setIsFeatureModalOpen(false)}
+        feature={selectedFeature}
+      />
     </div>
   );
 };
