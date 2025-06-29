@@ -24,34 +24,39 @@ export const appConfig = {
   },
 
   // Download links - leave empty string "" to show "Coming Soon"
+  // The system automatically detects:
+  // - File downloads (.exe, .dmg, .deb, .appimage, .apk, etc.) -> Direct download
+  // - Page links (app stores, web apps) -> Redirect to page
   downloads: {
-    // Mobile
+    // Mobile - App Store/Play Store links redirect to page
     ios: {
-      link: "", // "https://apps.apple.com/app/sidequestai" or ""
+      link: "", // "https://apps.apple.com/app/sidequestai" (page redirect)
       version: "1.0.0",
     },
     android: {
-      link: "", // "https://play.google.com/store/apps/details?id=com.sidequestai" or ""
+      link: "", // "https://play.google.com/store/apps/details?id=com.sidequestai" (page redirect)
+      //        or "https://github.com/user/repo/releases/download/v1.0.0/app.apk" (direct download)
       version: "1.0.0",
     },
 
-    // Desktop
+    // Desktop - Direct file downloads from GitHub releases or CDN
     windows: {
-      link: "", // "https://github.com/username/sidequestai/releases/download/v1.0.0/SideQuestAI-Windows.exe" or ""
+      link: "", // "https://github.com/username/sidequestai/releases/download/v1.0.0/SideQuestAI-Setup.exe" (direct download)
       version: "1.0.0",
     },
     mac: {
-      link: "", // "https://github.com/username/sidequestai/releases/download/v1.0.0/SideQuestAI-Mac.dmg" or ""
+      link: "", // "https://github.com/username/sidequestai/releases/download/v1.0.0/SideQuestAI.dmg" (direct download)
       version: "1.0.0",
     },
     linux: {
-      link: "", // "https://github.com/username/sidequestai/releases/download/v1.0.0/SideQuestAI-Linux.AppImage" or ""
+      link: "", // "https://github.com/username/sidequestai/releases/download/v1.0.0/SideQuestAI.AppImage" (direct download)
+      //        or "https://github.com/user/repo/releases/download/v1.0.0/sidequestai.deb" (direct download)
       version: "1.0.0",
     },
 
-    // Web
+    // Web - Page redirect
     web: {
-      link: "", // "https://app.sidequestai.com" or ""
+      link: "", // "https://app.sidequestai.com" (page redirect)
     },
   },
 

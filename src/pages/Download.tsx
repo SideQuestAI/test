@@ -21,6 +21,8 @@ import {
   CheckCircle,
   Globe,
   Github,
+  ExternalLink,
+  Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Particles from "@/components/ui/particles";
@@ -28,8 +30,13 @@ import MorphingButton from "@/components/ui/morphing-button";
 import DynamicLogo from "@/components/ui/dynamic-logo";
 import DynamicVideo from "@/components/ui/dynamic-video";
 import { appConfig } from "@/config/app.config";
-import { hasDownloadLink, getDownloadLink, getAppVersion } from "@/lib/assets";
 import { useToast } from "@/contexts/toast-context";
+import {
+  getDownloadInfo,
+  handleDownloadAction,
+  getButtonText,
+  getDownloadIcon,
+} from "@/lib/download-utils";
 
 const Download = () => {
   const { showSuccess, showError, showInfo } = useToast();
@@ -38,26 +45,29 @@ const Download = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDownloadClick = (
-    platform: string,
-    hasLink: boolean,
-    downloadLink: string | null,
+  const handleSmartDownload = (
+    platform: keyof typeof appConfig.downloads,
+    platformName: string,
   ) => {
-    if (hasLink && downloadLink) {
-      showSuccess(
-        `Downloading ${platform}`,
-        "Your download should start shortly...",
-      );
-      // Simulate download start
-      setTimeout(() => {
-        window.open(downloadLink, "_blank");
-      }, 500);
-    } else {
+    const downloadInfo = getDownloadInfo(platform);
+
+    if (!downloadInfo) {
       showInfo(
-        `${platform} Coming Soon`,
+        `${platformName} Coming Soon`,
         "We're working hard to bring you this platform. Stay tuned!",
       );
+      return;
     }
+
+    handleDownloadAction(
+      downloadInfo,
+      (message) => {
+        showSuccess(`${platformName} Download`, message);
+      },
+      (message) => {
+        showInfo(`${platformName} Redirect`, message);
+      },
+    );
   };
 
   const handleFeatureDemo = () => {
@@ -166,19 +176,38 @@ const Download = () => {
     platform: any;
     category: string;
   }) => {
-    const hasLink = hasDownloadLink(
+    const downloadInfo = getDownloadInfo(
       platform.id as keyof typeof appConfig.downloads,
     );
-    const downloadLink = getDownloadLink(
-      platform.id as keyof typeof appConfig.downloads,
-    );
-    const version = getAppVersion(
-      platform.id as keyof typeof appConfig.downloads,
-    );
+    const buttonText = getButtonText(downloadInfo, platform.name);
+    const iconType = getDownloadIcon(downloadInfo);
 
     const handleDownload = () => {
-      handleDownloadClick(platform.name, hasLink, downloadLink);
+      handleSmartDownload(
+        platform.id as keyof typeof appConfig.downloads,
+        platform.name,
+      );
     };
+
+    // Get the appropriate icon component
+    const getIconComponent = () => {
+      switch (iconType) {
+        case "apple":
+          return Apple;
+        case "smartphone":
+          return Smartphone;
+        case "globe":
+          return Globe;
+        case "external-link":
+          return ExternalLink;
+        case "clock":
+          return Clock;
+        default:
+          return DownloadIcon;
+      }
+    };
+
+    const IconComponent = getIconComponent();
 
     return (
       <motion.div variants={itemVariants}>
@@ -200,30 +229,39 @@ const Download = () => {
             <CardDescription className="text-lg text-slate-400">
               {platform.description}
             </CardDescription>
-            {hasLink && (
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                v{version}
-              </Badge>
+            {downloadInfo && (
+              <div className="flex flex-col gap-2">
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                  v{downloadInfo.version}
+                </Badge>
+                {downloadInfo.type === "download" && downloadInfo.filename && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs text-slate-500 border-slate-600"
+                  >
+                    {downloadInfo.filename}
+                  </Badge>
+                )}
+                {downloadInfo.type === "redirect" && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs text-blue-400 border-blue-500/30"
+                  >
+                    Store Page
+                  </Badge>
+                )}
+              </div>
             )}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center">
               <MorphingButton
                 className="w-full"
-                variant={hasLink ? "primary" : "secondary"}
+                variant={downloadInfo ? "primary" : "secondary"}
                 onClick={handleDownload}
               >
-                {hasLink ? (
-                  <>
-                    <DownloadIcon className="w-5 h-5" />
-                    Download for {platform.name}
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-5 h-5" />
-                    Coming Soon
-                  </>
-                )}
+                <IconComponent className="w-5 h-5" />
+                {buttonText}
               </MorphingButton>
             </div>
             <p className="text-sm text-slate-500 text-center">
@@ -468,8 +506,49 @@ const Download = () => {
         </div>
       </section>
 
+      {/* Download Info Section */}
+      <section className="py-12 relative z-10 bg-slate-900/30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="text-2xl font-display font-bold text-white mb-4">
+              Smart Download Detection
+            </h3>
+            <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
+              Our system automatically detects the best download method for each
+              platform:
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="glass p-4 rounded-xl">
+                <DownloadIcon className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                <h4 className="text-white font-semibold mb-1">
+                  Direct Downloads
+                </h4>
+                <p className="text-sm text-slate-400">
+                  .exe, .dmg, .deb files download directly from GitHub releases
+                </p>
+              </div>
+              <div className="glass p-4 rounded-xl">
+                <ExternalLink className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                <h4 className="text-white font-semibold mb-1">
+                  Store Redirects
+                </h4>
+                <p className="text-sm text-slate-400">
+                  App Store and Play Store links open in new tabs
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 relative z-10">
+        `
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-16"
