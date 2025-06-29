@@ -143,10 +143,19 @@ const Index = () => {
 
       {/* Navigation */}
       <motion.nav
-        className="sticky top-0 z-50 glass border-b border-white/10"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="sticky top-0 z-50 watery-nav"
+        initial={{ y: -100, opacity: 0, blur: 10 }}
+        animate={{ y: 0, opacity: 1, blur: 0 }}
+        transition={{
+          duration: 1.2,
+          type: "spring",
+          stiffness: 100,
+          damping: 20,
+        }}
+        whileHover={{
+          backgroundColor: "rgba(255, 255, 255, 0.08)",
+          transition: { duration: 0.3 },
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -159,28 +168,46 @@ const Index = () => {
 
             <div className="flex items-center space-x-6">
               <motion.div
-                whileHover={{ scale: 1.1 }}
+                whileHover={{
+                  scale: 1.1,
+                  y: -2,
+                  transition: { type: "spring", stiffness: 400, damping: 10 },
+                }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Link
                   to="/download"
-                  className="text-slate-300 hover:text-white transition-all duration-300 font-medium relative group"
+                  className="smooth-text text-slate-300 hover:text-white transition-all duration-500 font-medium relative group"
                 >
                   Download
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+                  <motion.span
+                    className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 liquid-gradient"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                  />
                 </Link>
               </motion.div>
 
               <motion.div
-                whileHover={{ scale: 1.1 }}
+                whileHover={{
+                  scale: 1.1,
+                  y: -2,
+                  transition: { type: "spring", stiffness: 400, damping: 10 },
+                }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Link
                   to="/pricing"
-                  className="text-slate-300 hover:text-white transition-all duration-300 font-medium relative group"
+                  className="smooth-text text-slate-300 hover:text-white transition-all duration-500 font-medium relative group"
                 >
                   Pricing
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+                  <motion.span
+                    className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 liquid-gradient"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                  />
                 </Link>
               </motion.div>
 
@@ -225,22 +252,57 @@ const Index = () => {
             <motion.h1
               variants={itemVariants}
               className="text-6xl sm:text-7xl lg:text-8xl font-display font-bold mb-8"
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                stiffness: 100,
+                damping: 15,
+              }}
             >
-              Your{" "}
               <motion.span
-                className="text-gradient inline-block"
+                whileHover={{
+                  scale: 1.02,
+                  transition: { type: "spring", stiffness: 300 },
+                }}
+              >
+                Your{" "}
+              </motion.span>
+              <motion.span
+                className="text-gradient inline-block liquid-gradient"
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                 }}
-                transition={{ duration: 3, repeat: Infinity }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  rotateY: 5,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                  },
+                }}
                 style={{
-                  backgroundSize: "200% 200%",
+                  backgroundSize: "300% 300%",
                 }}
               >
                 AI Mentor
               </motion.span>
               <br />
-              for Side Hustles
+              <motion.span
+                whileHover={{
+                  scale: 1.02,
+                  transition: { type: "spring", stiffness: 300 },
+                }}
+              >
+                for Side Hustles
+              </motion.span>
             </motion.h1>
 
             <motion.p
@@ -273,9 +335,18 @@ const Index = () => {
           {/* Interactive Demo Card */}
           <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
             <motion.div
-              className="glass p-8 rounded-2xl border-2 border-white/20 glow hover-lift cursor-pointer"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              className="watery-card p-8 rounded-2xl border-2 border-white/20 glow cursor-pointer smooth-entrance"
+              whileHover={{
+                scale: 1.03,
+                y: -8,
+                rotateX: 5,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                },
+              }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleFeatureClick("aiGeneration")}
             >
               <div className="text-center mb-6">
@@ -544,8 +615,18 @@ const Index = () => {
             ].map((feature, index) => (
               <motion.div key={index} variants={itemVariants}>
                 <Card
-                  className="p-6 glass border-2 border-white/10 hover:border-white/30 hover-lift glow h-full group cursor-pointer"
+                  className="p-6 watery-card border-2 border-white/10 hover:border-white/30 glow h-full group cursor-pointer elastic-hover"
                   onClick={() => handleFeatureClick(feature.featureKey)}
+                  whileHover={{
+                    y: -12,
+                    scale: 1.03,
+                    rotateY: 5,
+                    transition: {
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                    },
+                  }}
                 >
                   <CardHeader className="pb-4">
                     <motion.div

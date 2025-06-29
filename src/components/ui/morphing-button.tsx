@@ -34,18 +34,35 @@ export const MorphingButton = ({
   return (
     <motion.button
       className={cn(
-        "relative overflow-hidden rounded-xl font-medium transition-all duration-300",
-        "hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/30",
+        "relative overflow-hidden rounded-xl font-medium liquid-button ripple-effect",
+        "focus:outline-none focus:ring-4 focus:ring-blue-500/30",
         variants[variant],
         sizes[size],
         className,
       )}
       onClick={onClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{
+        scale: 1.08,
+        y: -3,
+        transition: {
+          type: "spring",
+          stiffness: 400,
+          damping: 10,
+        },
+      }}
+      whileTap={{
+        scale: 0.96,
+        y: 0,
+        transition: { duration: 0.1 },
+      }}
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 0.6,
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+      }}
     >
       {/* Animated background gradient */}
       <motion.div

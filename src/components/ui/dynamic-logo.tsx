@@ -69,14 +69,24 @@ export const DynamicLogo: React.FC<DynamicLogoProps> = ({
     : {};
 
   return (
-    <div className={`flex items-center space-x-2 ${className}`}>
+    <div className={`flex items-center space-x-2 liquid-logo ${className}`}>
       <motion.div
-        className={`flex items-center justify-center ${
+        className={`flex items-center justify-center liquid-morph ${
           showTextLogo
-            ? "w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg glow"
+            ? "w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg glow liquid-gradient"
             : ""
         }`}
         {...logoAnimation}
+        whileHover={{
+          scale: 1.15,
+          rotate: [0, -10, 10, 0],
+          transition: {
+            type: "spring",
+            stiffness: 300,
+            damping: 10,
+            rotate: { duration: 0.6 },
+          },
+        }}
       >
         {showTextLogo ? (
           <span className="text-white font-bold text-sm">
@@ -98,9 +108,20 @@ export const DynamicLogo: React.FC<DynamicLogoProps> = ({
       </motion.div>
 
       {showText && (
-        <span className="font-display font-bold text-xl text-neon animate-text-glow">
+        <motion.span
+          className="font-display font-bold text-xl text-neon watery-text smooth-text"
+          whileHover={{
+            scale: 1.05,
+            textShadow: [
+              "0 0 10px rgba(59, 130, 246, 0.8)",
+              "0 0 20px rgba(168, 85, 247, 0.6)",
+              "0 0 30px rgba(236, 72, 153, 0.4)",
+            ],
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        >
           {appConfig.branding.name}
-        </span>
+        </motion.span>
       )}
     </div>
   );
