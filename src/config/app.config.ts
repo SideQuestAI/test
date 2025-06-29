@@ -74,7 +74,7 @@ export const appConfig = {
 
   // Contact
   contact: {
-    email: "support@sidequestai.com",
+    email: "sidequestaiofficial@gmail.com",
     phone: "",
   },
 };
