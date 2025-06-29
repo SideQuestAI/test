@@ -723,16 +723,30 @@ const Index = () => {
               © 2024 SideQuestAI. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              {["Terms", "Privacy", "Cookies"].map((item) => (
-                <motion.a
-                  key={item}
-                  href="#"
+              <motion.div whileHover={{ scale: 1.1 }}>
+                <Link
+                  to="/terms"
                   className="text-slate-400 hover:text-white transition-colors duration-300"
-                  whileHover={{ scale: 1.1 }}
                 >
-                  {item}
-                </motion.a>
-              ))}
+                  Terms
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }}>
+                <Link
+                  to="/privacy"
+                  className="text-slate-400 hover:text-white transition-colors duration-300"
+                >
+                  Privacy
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }}>
+                <Link
+                  to="/refund"
+                  className="text-slate-400 hover:text-white transition-colors duration-300"
+                >
+                  Refund
+                </Link>
+              </motion.div>
             </div>
           </div>
         </div>

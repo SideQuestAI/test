@@ -29,10 +29,47 @@ import DynamicLogo from "@/components/ui/dynamic-logo";
 import DynamicVideo from "@/components/ui/dynamic-video";
 import { appConfig } from "@/config/app.config";
 import { hasDownloadLink, getDownloadLink, getAppVersion } from "@/lib/assets";
+import { useToast } from "@/contexts/toast-context";
 
 const Download = () => {
+  const { showSuccess, showError, showInfo } = useToast();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDownloadClick = (
+    platform: string,
+    hasLink: boolean,
+    downloadLink: string | null,
+  ) => {
+    if (hasLink && downloadLink) {
+      showSuccess(
+        `Downloading ${platform}`,
+        "Your download should start shortly...",
+      );
+      // Simulate download start
+      setTimeout(() => {
+        window.open(downloadLink, "_blank");
+      }, 500);
+    } else {
+      showInfo(
+        `${platform} Coming Soon`,
+        "We're working hard to bring you this platform. Stay tuned!",
+      );
+    }
+  };
+
+  const handleFeatureDemo = () => {
+    showInfo(
+      "Feature Demo",
+      "Interactive demo coming soon! Check out our pricing plans in the meantime.",
+    );
+    setTimeout(() => {
+      document
+        .getElementById("features")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 1000);
   };
 
   const containerVariants = {
@@ -140,11 +177,7 @@ const Download = () => {
     );
 
     const handleDownload = () => {
-      if (hasLink && downloadLink) {
-        window.open(downloadLink, "_blank");
-      } else {
-        scrollToTop();
-      }
+      handleDownloadClick(platform.name, hasLink, downloadLink);
     };
 
     return (
@@ -342,7 +375,10 @@ const Download = () => {
       </section>
 
       {/* Platform Downloads */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
+      <section
+        id="platforms"
+        className="py-20 px-4 sm:px-6 lg:px-8 relative z-10"
+      >
         <div className="max-w-7xl mx-auto">
           {/* Mobile Apps */}
           <motion.div
@@ -657,7 +693,20 @@ const Download = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <MorphingButton size="lg" onClick={scrollToTop}>
+                <MorphingButton
+                  size="lg"
+                  onClick={() => {
+                    showSuccess(
+                      "Downloading SideQuestAI",
+                      "Choose your preferred platform above!",
+                    );
+                    setTimeout(() => {
+                      document
+                        .getElementById("platforms")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }, 1000);
+                  }}
+                >
                   <DownloadIcon className="w-5 h-5" />
                   Download Now
                 </MorphingButton>
@@ -703,16 +752,24 @@ const Download = () => {
               >
                 Pricing
               </Link>
-              {["Privacy", "Terms", "Support"].map((item) => (
-                <motion.a
-                  key={item}
-                  href="#"
-                  className="hover:text-white transition-colors duration-300"
-                  whileHover={{ scale: 1.1 }}
-                >
-                  {item}
-                </motion.a>
-              ))}
+              <Link
+                to="/privacy"
+                className="hover:text-white transition-colors duration-300"
+              >
+                Privacy
+              </Link>
+              <Link
+                to="/terms"
+                className="hover:text-white transition-colors duration-300"
+              >
+                Terms
+              </Link>
+              <Link
+                to="/refund"
+                className="hover:text-white transition-colors duration-300"
+              >
+                Refund
+              </Link>
             </div>
           </motion.div>
 
