@@ -30,21 +30,12 @@ const Pricing = () => {
 
   const handlePlanSelect = (planName: string, price: string) => {
     if (planName === "Free") {
-      showSuccess(
-        "Welcome to SideQuestAI!",
-        "Your free account is ready. Start creating your first course!",
-      );
+      showSuccess("Welcome to SideQuestAI!", "Your free account is ready. Start creating your first course!");
     } else {
-      showInfo(
-        `${planName} Plan Selected`,
-        `Redirecting to checkout for ${price}/month...`,
-      );
+      showInfo(`${planName} Plan Selected`, `Redirecting to checkout for ${price}/month...`);
       // Simulate redirect to payment
       setTimeout(() => {
-        showInfo(
-          "Payment Portal",
-          "This would normally redirect to Stripe/PayPal checkout",
-        );
+        showInfo("Payment Portal", "This would normally redirect to Stripe/PayPal checkout");
       }, 2000);
     }
   };
@@ -64,7 +55,9 @@ const Pricing = () => {
         "Community access",
         "Email support",
       ],
-      limitations: ["Limited to 1 course creation"],
+      limitations: [
+        "Limited to 1 course creation",
+      ],
       buttonText: "Get Started Free",
       gradient: "from-slate-600 to-slate-700",
       glowColor: "slate",
@@ -297,14 +290,15 @@ const Pricing = () => {
                       whileHover={{ scale: 1.1, rotate: 5 }}
                     >
                       <plan.icon className="w-6 h-6 text-white" />
-                    </motion.div>
-
-                    <CardTitle className="text-2xl font-display font-bold text-white">
-                      {plan.name}
-                    </CardTitle>
-
-                    <div className="flex items-baseline justify-center space-x-1 my-4">
-                      <span className="text-4xl font-bold text-white">
+                  <motion.div variants={itemVariants}>
+                    <Card
+                      id={plan.name === "Free" ? "free" : undefined}
+                      className={`relative h-full glass border-2 hover:border-white/30 transition-all duration-300 ${
+                        plan.popular
+                          ? "border-blue-500/50 scale-105"
+                          : "border-white/10"
+                      }`}
+                    >
                         {plan.price}
                       </span>
                       <span className="text-slate-400">{plan.period}</span>
@@ -445,21 +439,21 @@ const Pricing = () => {
               Start with our free plan and experience the power of AI-driven
               course creation
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <MorphingButton
-                size="lg"
-                onClick={() => handlePlanSelect("Free", "$0")}
-              >
-                <Rocket className="w-5 h-5" />
-                Start Free Today
-              </MorphingButton>
-              <Link to="/download">
-                <MorphingButton variant="secondary" size="lg">
-                  <ArrowRight className="w-5 h-5" />
-                  Download App
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <MorphingButton
+                  size="lg"
+                  onClick={() => handlePlanSelect("Free", "$0")}
+                >
+                  <Rocket className="w-5 h-5" />
+                  Start Free Today
                 </MorphingButton>
-              </Link>
-            </div>
+                <Link to="/download">
+                  <MorphingButton variant="secondary" size="lg">
+                    <ArrowRight className="w-5 h-5" />
+                    Download App
+                  </MorphingButton>
+                </Link>
+              </div>
           </div>
         </motion.div>
       </section>
@@ -468,7 +462,10 @@ const Pricing = () => {
       <footer className="bg-slate-900/50 glass border-t border-white/10 text-white py-12 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <motion.div className="mb-4 md:mb-0" whileHover={{ scale: 1.05 }}>
+            <motion.div
+              className="mb-4 md:mb-0"
+              whileHover={{ scale: 1.05 }}
+            >
               <DynamicLogo />
             </motion.div>
 

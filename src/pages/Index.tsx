@@ -59,12 +59,22 @@ const Index = () => {
 
   const handleStartJourney = () => {
     showSuccess(
-      "Welcome to SideQuestAI!",
-      "Your entrepreneurial journey starts now. Check out our pricing plans!",
+      "Ready to Start!",
+      "Redirecting to download the SideQuestAI app...",
     );
     setTimeout(() => {
-      window.location.href = "/pricing";
+      window.location.href = "/download";
     }, 1500);
+  };
+
+  const handleTryFree = () => {
+    showInfo(
+      "Try Free Plan",
+      "Checking out our free plan with 5,000 AI tokens!",
+    );
+    setTimeout(() => {
+      window.location.href = "/pricing#free";
+    }, 1000);
   };
 
   const handleLearnMore = () => {
@@ -319,16 +329,18 @@ const Index = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <MorphingButton size="lg" onClick={handleStartJourney}>
-                <Rocket className="w-5 h-5" />
-                Start Your Journey
+                <Download className="w-5 h-5" />
+                Get the App
               </MorphingButton>
 
-              <Link to="/download">
-                <MorphingButton variant="secondary" size="lg">
-                  <Download className="w-5 h-5" />
-                  Download App
-                </MorphingButton>
-              </Link>
+              <MorphingButton
+                variant="secondary"
+                size="lg"
+                onClick={handleTryFree}
+              >
+                <Zap className="w-5 h-5" />
+                Try Free
+              </MorphingButton>
             </motion.div>
           </div>
 
@@ -704,14 +716,14 @@ const Index = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <MorphingButton size="lg" onClick={handleStartJourney}>
-                  <Rocket className="w-5 h-5" />
-                  Start Your Course
+                  <Download className="w-5 h-5" />
+                  Download SideQuestAI
                 </MorphingButton>
 
-                <Link to="/download">
+                <Link to="/pricing">
                   <MorphingButton variant="secondary" size="lg">
-                    <Download className="w-5 h-5" />
-                    Download App
+                    <Rocket className="w-5 h-5" />
+                    View Plans
                   </MorphingButton>
                 </Link>
               </div>
