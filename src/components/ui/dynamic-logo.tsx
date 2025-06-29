@@ -112,11 +112,8 @@ export const DynamicLogo: React.FC<DynamicLogoProps> = ({
           className="font-display font-bold text-xl text-neon watery-text smooth-text"
           whileHover={{
             scale: 1.05,
-            textShadow: [
-              "0 0 10px rgba(59, 130, 246, 0.8)",
-              "0 0 20px rgba(168, 85, 247, 0.6)",
-              "0 0 30px rgba(236, 72, 153, 0.4)",
-            ],
+            textShadow:
+              "0 0 20px rgba(168, 85, 247, 0.8), 0 0 30px rgba(236, 72, 153, 0.6)",
           }}
           transition={{ type: "spring", stiffness: 300, damping: 15 }}
         >
